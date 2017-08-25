@@ -39,6 +39,3 @@ class Gym
     exec(cmd)
   end
 end
-
-g = Gym.new('vim')
-g.edit(true, true)
