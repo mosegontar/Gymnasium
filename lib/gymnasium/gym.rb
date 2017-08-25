@@ -12,8 +12,8 @@ class Gym
     File.open(@fname, 'a') {}
   end
 
-  def edit(new = false, execute = false)
-    make_new if new
+  def edit(blank = false, execute = false)
+    make_new if blank
 
     cmd = "#{@editor} #{@fname}"
     system(cmd)

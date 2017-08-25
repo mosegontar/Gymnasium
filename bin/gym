@@ -1,3 +1,39 @@
 #!/usr/bin/env ruby
-require('gymnasium')
+require 'optparse'
+require 'ostruct'
 
+require 'gymnasium'
+
+module GymnasiumParser
+  def self.parse(args)
+    options = OpenStruct.new
+    options.editor = 'vim'
+    options.blank = false
+    options.execute = false
+
+    opt_parser = OptionParser.new do  |opt|
+      opt.banner = 'Gymnasium makes creating and managing scratch files easy!'
+
+      opt.on('-n', '--new', 'Create new _gym file (writes over existing file') do
+        options.blank = true
+      end
+
+      opt.on('-r', '--run', 'Run _gym file in interpreter after editing') do
+        options.execute = true
+      end
+
+      opt.on('-h', '--h', 'help') do
+        puts opt_parser
+        exit 1
+      end
+    end
+
+    opt_parser.parse!(args)
+    options
+  end
+end
+
+options = GymnasiumParser.parse(ARGV)
+
+gym = Gym.new(options.editor)
+gym.edit(options.blank, options.execute)
