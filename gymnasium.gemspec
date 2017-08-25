@@ -7,7 +7,8 @@ Gem::Specification.new do |s|
   s.description = "Easy scratch file maintenance"
   s.authors     = ["Alexander Gontar"]
   s.email       = 'mosegontar@gmail.com'
-  s.files       = Dir["{lib}/**/*.rb", "*.md"]
+  s.executables << 'gym'
+  s.files       = Dir["{lib}/**/*.rb", "bin/*", "*.md"]
   s.homepage    =
     'http://github.com/mosegontar/gymnasium'
   s.license     = 'MIT'
