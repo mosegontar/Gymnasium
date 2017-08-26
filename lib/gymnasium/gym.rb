@@ -1,7 +1,7 @@
 
 # Gym class
 class Gym
-  @extension_map = { py: 'python', rb: 'ruby' }
+  @@EXTENSION_MAP = { py: 'python', rb: 'ruby' }
 
   def initialize(editor)
     @fname = '_gym.rb'
@@ -15,8 +15,7 @@ class Gym
   def edit(blank = false, execute = false)
     make_new if blank
 
-    cmd = "#{@editor} #{@fname}"
-    system(cmd)
+    system("#{@editor} #{@fname}")
 
     execute_file if execute
   end
@@ -30,12 +29,11 @@ class Gym
   def execute_file
     extension = /\.\w+$/.match(@fname).to_s
     if extension.nil?
-      puts "Can't determine interpreter for #{extension} file"
+      puts "Can't determine command for #{extension} file"
       return
     end
 
-    interpreter = @extension_map[extension.sub!('.', '').to_sym]
-    cmd = "#{interpreter} #{@fname}"
-    exec(cmd)
+    cmd = @@EXTENSION_MAP[extension.sub!('.', '').to_sym]
+    exec("#{cmd} #{@fname}")
   end
 end

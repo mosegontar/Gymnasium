@@ -18,7 +18,7 @@ module GymnasiumParser
         options.blank = true
       end
 
-      opt.on('-r', '--run', 'Run _gym file in interpreter after editing') do
+      opt.on('-e', '--exec', 'Execute the _gym file after editing') do
         options.execute = true
       end
 
