@@ -10,16 +10,21 @@ module GymnasiumParser
     options.editor = 'vim'
     options.blank = false
     options.execute = false
+    options.clean = false
 
     opt_parser = OptionParser.new do  |opt|
       opt.banner = 'Gymnasium makes creating and managing scratch files easy!'
 
-      opt.on('-n', '--new', 'Create new _gym file (writes over existing file') do
+      opt.on('-n', '--new', 'Create new .gym file (writes over existing file') do
         options.blank = true
       end
 
-      opt.on('-e', '--exec', 'Execute the _gym file after editing') do
+      opt.on('-e', '--exec', 'Execute the .gym file after editing') do
         options.execute = true
+      end
+
+      opt.on('--clean', "Remove existing .gym files in current working directoy") do
+        options.clean = true
       end
 
       opt.on('-h', '--h', 'help') do
@@ -35,5 +40,9 @@ end
 
 options = GymnasiumParser.parse(ARGV)
 
-gym = Gym.new(options.editor)
-gym.edit(options.blank, options.execute)
+if options.clean
+  GymCleaner::clean_gym
+else
+  gym = Gym.new(options.editor)
+  gym.edit(options.blank, options.execute)
+end

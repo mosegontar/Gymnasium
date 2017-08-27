@@ -1,18 +1,23 @@
+require './lib/gymnasium/gym_cleaner'
 
-# Gym class
+# Gym class containing methods for creating .gym files,
+# launching them in an editor, and executing them.
 class Gym
-  @@EXTENSION_MAP = { py: 'python', rb: 'ruby' }
+
+  @@EXT_MAP = { py: 'python', rb: 'ruby' }
 
   def initialize(editor)
-    @fname = '_gym.rb'
     @editor = editor
+    @fname, @ext = check_and_create
 
-    # create file if it doesn't exist
-    # and close it immediately after
-    File.open(@fname, 'a') {}
+    if @fname
+      File.open(@fname, 'a')
+    end
   end
 
   def edit(blank = false, execute = false)
+    return unless @fname
+
     make_new if blank
 
     system("#{@editor} #{@fname}")
@@ -22,18 +27,41 @@ class Gym
 
   private
 
+  def check_and_create
+    files = GymCleaner::identify_gym_files
+
+    if files.length > 1
+      puts <<~EOM
+      Multiple .gym files found: #{files}
+      use "gym --clean" to remove all existing gym files
+      EOM
+      return nil, nil
+    elsif files.length == 1
+      extracted_ext = GymCleaner::extract_extension(files[0])
+
+      if GymCleaner::valid_ext?(extracted_ext, @@EXT_MAP.keys)
+        ext = extracted_ext
+      end
+    else
+      req =  GymCleaner::request_extension
+      unless GymCleaner::valid_ext?(req, @@EXT_MAP.keys)
+        puts "Gym does not currently support .#{req} files"
+        return
+      end
+      ext = req
+    end
+
+    fname = '.gym.' + ext
+    return fname, ext
+  end
+
   def make_new
+    GymCleaner::clean_gym
     File.open(@fname, 'w') {}
   end
 
   def execute_file
-    extension = /\.\w+$/.match(@fname).to_s
-    if extension.nil?
-      puts "Can't determine command for #{extension} file"
-      return
-    end
-
-    cmd = @@EXTENSION_MAP[extension.sub!('.', '').to_sym]
+    cmd = @@EXT_MAP[@ext.to_sym]
     exec("#{cmd} #{@fname}")
   end
 end
